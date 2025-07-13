@@ -1,0 +1,300 @@
+{
+  "name": "backup_wf_diario_googledrive",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 3
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -260,
+        320
+      ],
+      "id": "927e05e0-4912-4ec6-844d-0ccfe30d0a1a",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        -20
+      ],
+      "id": "25e274ce-8d88-4460-bcb6-f94e2bae5ad6",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        360,
+        160
+      ],
+      "id": "1a28482b-f38d-4b08-80b3-d107fa306352",
+      "name": "PEGA TODOS OS WORKFLOWS",
+      "credentials": {
+        "n8nApi": {
+          "id": "CbX2wQXSqSMwg88m",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{$today.toFormat(\"yyyy-MM-dd\")}}\n",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "PROCURAR A PASTA QUE VAI SALVAR OS BCKP",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        180,
+        160
+      ],
+      "id": "7c936fd3-292c-4d34-add0-c946c9aec86b",
+      "name": "Create folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "RTzVbDZsKNXemerd",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        540,
+        160
+      ],
+      "id": "1fd20595-3984-4ade-ab1f-87fdb55bb398",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "name": "={{$node[\"PEGA TODOS OS WORKFLOWS\"].json[\"name\"]}}.json",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Create folder').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        800,
+        160
+      ],
+      "id": "5fd1108f-fb8f-4e74-a842-7f0a97492200",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "RTzVbDZsKNXemerd",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### 🔴 **TRIGGER MANUAL OU WEBHOOK**\n\n**⚡ Disparador manual ou automático para iniciar o processo de backup.**\n\n- 🖱️ **Trigger Manual**: útil para testes  \n- ⏰ **Schedule Trigger**: dispara diariamente (ex: 3h da manhã)\n\n*🔄 Permite flexibilidade entre execução sob demanda ou rotina automática.*\n",
+        "height": 792,
+        "width": 496,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -420,
+        -280
+      ],
+      "typeVersion": 1,
+      "id": "bc8cdf28-2533-42dd-9ba3-e84426157f05",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "### 🟤 PEGA PASTA - BACKUP DOS WF - CONVERSÃO DOS ARQUIVOS\n\n**📦 Etapa central do fluxo:**\n\n1. 🗂️ Cria uma pasta no Google Drive com a data do dia  \n2. 🔄 Recupera todos os workflows do ambiente n8n via API  \n3. 🧾 Converte cada workflow para um arquivo JSON com nome personalizado  \n   → 🏷️ nome, ID e data são incluídos no nome do arquivo\n\n*📁 Essa etapa garante organização e estrutura nos backups.*\n",
+        "height": 788,
+        "width": 612
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        80,
+        -280
+      ],
+      "typeVersion": 1,
+      "id": "5911df83-cf08-408f-9a20-88d1fb85cf52",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "### 🔵 UPLOAD DO BACKUP NA PASTA\n\n**📤 Envia os arquivos JSON gerados para a pasta do Google Drive criada no início do fluxo.**\n\n- 📅 Usa a mesma pasta datada  \n- ✅ Garante que todos os workflows do dia estejam salvos  \n- 🏷️ Arquivos nomeados com base no nome do fluxo\n\n*🔐 Finaliza o processo de backup com segurança.*\n",
+        "height": 792,
+        "width": 336,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        700,
+        -280
+      ],
+      "typeVersion": 1,
+      "id": "6191c579-97fb-439f-a7da-ff8c89a1d780",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "### 📄 SOBRE ESTE FLUXO – BACKUP AUTOMÁTICO n8n PARA GOOGLE DRIVE 📄\n\nEste fluxo foi desenvolvido por **Matheus Névoa**, Analista Fluig na TOTVS | Em evolução em Automação com n8n + IA\n\n🔗 LinkedIn: [matheusnevoa](https://www.linkedin.com/in/matheusnevoa/)\n\n---\n\n🎯 **Objetivo do fluxo**:  \nAutomatizar o **backup diário dos workflows do n8n**, garantindo:\n\n- 🗂️ Organização por data (pasta com o dia da execução)  \n- 🧾 Exportação de todos os workflows em formato **.json**  \n- 🏷️ Nome de arquivo com `nome do fluxo`  \n- ☁️ Armazenamento direto e seguro no **Google Drive**\n\n---",
+        "height": 420,
+        "width": 1460,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -420,
+        -720
+      ],
+      "typeVersion": 1,
+      "id": "b4d0b74d-5bc3-4ab1-960e-1ef5b125721c",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "![Backup Workflow](https://i.postimg.cc/JtBhH5cc/image.png)\n\n\n",
+        "width": 200,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        820,
+        -480
+      ],
+      "typeVersion": 1,
+      "id": "1ca81966-e331-48f4-946b-1836472add8e",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "CRIAR KEY NO PAINEL DO N8N",
+        "height": 80,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        300,
+        100
+      ],
+      "typeVersion": 1,
+      "id": "b7477c0f-e305-4c21-8587-94a074a2ee2d",
+      "name": "Sticky Note4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Create folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Create folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PEGA TODOS OS WORKFLOWS": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create folder": {
+      "main": [
+        [
+          {
+            "node": "PEGA TODOS OS WORKFLOWS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b51b7b89-276b-4e24-9706-2e63f11c7579",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d3fbdf9291b8d89f97311acebb7d6a4f724215f5ee77c98ce5ecc255c520c001"
+  },
+  "id": "HPS1XhtQplGczhn1",
+  "tags": [
+    {
+      "createdAt": "2025-07-13T18:46:11.803Z",
+      "updatedAt": "2025-07-13T18:46:11.803Z",
+      "id": "yfJexudQFn4tB66V",
+      "name": "em_producao"
+    }
+  ]
+}
